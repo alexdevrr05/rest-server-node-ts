@@ -9,7 +9,7 @@ const todos = [
   {
     id: 2,
     text: 'Comprar huevo',
-    createdAt: new Date(),
+    createdAt: null,
   },
 ];
 
@@ -36,8 +36,18 @@ export class TodoController {
   };
 
   public createTodo = (req: Request, res: Response) => {
-    const body = req.body;
+    const { text } = req.body;
+    if (!text)
+      return res.status(400).json({ error: 'text property is required' });
 
-    return res.json(body);
+    const newTodo = {
+      id: todos.length + 1,
+      text: text,
+      createdAt: null,
+    };
+
+    todos.push(newTodo);
+
+    return res.json(newTodo);
   };
 }
