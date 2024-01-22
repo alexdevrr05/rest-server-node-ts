@@ -27,12 +27,17 @@ export class TodoController {
       return res.status(400).json({ error: 'id argument is not a number' });
 
     const todoFound = todos.find((todo) => todo.id === id);
-    console.log({ todoFound });
     if (!todoFound)
       return res
         .status(404)
         .json({ error: `No se ha encontrado un todo con el id ${id}` });
 
     return res.json(todoFound);
+  };
+
+  public createTodo = (req: Request, res: Response) => {
+    const body = req.body;
+
+    return res.json(body);
   };
 }
