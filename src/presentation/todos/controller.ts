@@ -53,7 +53,12 @@ export class TodoController {
 
   public updateTodo = (req: Request, res: Response) => {
     const id = +req.params.id;
+    if (isNaN(id))
+      return res.status(400).json({ error: 'id argument is not a number' });
+
     const { text } = req.body;
+    if (!text)
+      return res.status(400).json({ error: 'text property is required ' });
 
     const todoFound = todos.findIndex((todo) => todo.id === id);
     if (todoFound !== -1) {
