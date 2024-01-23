@@ -50,4 +50,20 @@ export class TodoController {
 
     return res.json(newTodo);
   };
+
+  public updateTodo = (req: Request, res: Response) => {
+    const id = +req.params.id;
+    const { text } = req.body;
+
+    const todoFound = todos.findIndex((todo) => todo.id === id);
+    if (todoFound !== -1) {
+      todos[todoFound].text = text;
+
+      return res.json(todos[todoFound]);
+    }
+
+    return res.status(400).json({
+      error: `No se ha encontrado un todo con el id ${id}`,
+    });
+  };
 }
