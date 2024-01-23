@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
 
-const todos = [
+let todos = [
   {
     id: 1,
     text: 'Sacar a pasear a Milo',
@@ -70,5 +70,18 @@ export class TodoController {
     return res.status(400).json({
       error: `No se ha encontrado un todo con el id ${id}`,
     });
+  };
+
+  public deleteTodo = (req: Request, res: Response) => {
+    const id = +req.params.id;
+    const todo = todos.find((todo) => todo.id === id);
+    if (!todo)
+      return res
+        .status(400)
+        .json({ error: `No se ha encontrado un todo con el id ${id}` });
+
+    todos = todos.filter((item) => item.id !== todo.id);
+
+    return res.status(201).json({});
   };
 }
