@@ -1,14 +1,6 @@
 import { Response, Request } from 'express';
 import { prisma } from '../../data/postgres';
 
-let todos = [
-  {
-    id: 1,
-    text: 'Comprar cafe',
-    completedAt: null,
-  },
-];
-
 export class TodoController {
   // DI: Dependency injection
   constructor() {}
@@ -67,15 +59,16 @@ export class TodoController {
     return res.json(todoUpdated);
   };
 
-  public deleteTodo = (req: Request, res: Response) => {
+  public deleteTodo = async (req: Request, res: Response) => {
     const id = +req.params.id;
-    const todo = todos.find((todo) => todo.id === id);
-    if (!todo)
-      return res
-        .status(400)
-        .json({ error: `No se ha encontrado un todo con el id ${id}` });
 
-    todos = todos.filter((item) => item.id !== todo.id);
+    const todo = await prisma.todo.findFirst({ where: { id } });
+    if (!todo) {
+      return res.status(400).json({
+        error: `No se ha encontrado un todo con el id ${id}`,
+      });
+    }
+    await prisma.todo.delete({ where: { id } });
 
     return res.status(201).json({});
   };
