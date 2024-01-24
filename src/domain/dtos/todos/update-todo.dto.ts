@@ -5,6 +5,10 @@ export class UpdateTodoDto {
     public readonly completedAt?: Date
   ) {}
 
+  /**
+   obtener un objeto con los valores que realmente están 
+   presentes en la instancia después de su creación
+  */
   get values() {
     const returnObj: { [key: string]: any } = {};
 
@@ -26,8 +30,6 @@ export class UpdateTodoDto {
         return ['CompletedAt must be a valid date'];
       }
     }
-
-    // if (!text) return ['Text property is required', undefined];
 
     return [undefined, new UpdateTodoDto(id, text, newCompletedAt)];
   }
