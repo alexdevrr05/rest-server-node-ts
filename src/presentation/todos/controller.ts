@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
 import { prisma } from '../../data/postgres';
-import { CreateTodoDto } from '../../domain/dtos';
+import { CreateTodoDto, UpdateTodoDto } from '../../domain/dtos';
 
 export class TodoController {
   // DI: Dependency injection
@@ -39,8 +39,12 @@ export class TodoController {
 
   public updateTodo = async (req: Request, res: Response) => {
     const id = +req.params.id;
-    if (isNaN(id))
-      return res.status(400).json({ error: 'id argument is not a number' });
+    const [error, updateTodoDto] = UpdateTodoDto.create({
+      ...req.body,
+      id,
+    });
+
+    if (error) return res.status(400).json({ error });
 
     const todo = await prisma.todo.findFirst({ where: { id } });
     if (!todo) {
@@ -48,15 +52,12 @@ export class TodoController {
         error: `No se ha encontrado un todo con el id ${id}`,
       });
     }
-
-    const { text, completedAt } = req.body;
-
-    const todoUpdated = await prisma.todo.update({
+    const updatedTodo = await prisma.todo.update({
       where: { id },
-      data: { text, completedAt: completedAt ? new Date(completedAt) : null },
+      data: updateTodoDto!.values,
     });
 
-    return res.json(todoUpdated);
+    return res.json(updatedTodo);
   };
 
   public deleteTodo = async (req: Request, res: Response) => {
