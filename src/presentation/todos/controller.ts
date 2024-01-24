@@ -1,5 +1,6 @@
 import { Response, Request } from 'express';
 import { prisma } from '../../data/postgres';
+import { CreateTodoDto } from '../../domain/dtos';
 
 export class TodoController {
   // DI: Dependency injection
@@ -22,14 +23,15 @@ export class TodoController {
   };
 
   public createTodo = async (req: Request, res: Response) => {
+    const [error, createTodoDto] = CreateTodoDto.create(req.body);
+    if (error) return res.status(400).json({ error });
     const { text } = req.body;
     if (!text)
       return res.status(400).json({ error: 'text property is required' });
 
+    // usamos el signo "!" porque ya tenemos "createTodoDto"
     const todo = await prisma.todo.create({
-      data: {
-        text,
-      },
+      data: createTodoDto!,
     });
 
     return res.json(todo);
