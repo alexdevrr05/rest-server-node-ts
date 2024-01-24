@@ -42,10 +42,6 @@ export class TodoController {
     if (isNaN(id))
       return res.status(400).json({ error: 'id argument is not a number' });
 
-    const { text } = req.body;
-    if (!text)
-      return res.status(400).json({ error: 'text property is required ' });
-
     const todo = await prisma.todo.findFirst({ where: { id } });
     if (!todo) {
       return res.status(400).json({
@@ -53,9 +49,11 @@ export class TodoController {
       });
     }
 
+    const { text, completedAt } = req.body;
+
     const todoUpdated = await prisma.todo.update({
       where: { id },
-      data: { text },
+      data: { text, completedAt: completedAt ? new Date(completedAt) : null },
     });
 
     return res.json(todoUpdated);
