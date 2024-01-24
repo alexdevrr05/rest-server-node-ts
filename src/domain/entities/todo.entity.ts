@@ -16,13 +16,13 @@ export class TodoEntity {
     if (!text) throw 'text is required';
 
     let newCompletedAt;
-    if (newCompletedAt) {
+    if (completedAt) {
       newCompletedAt = new Date(completedAt);
       if (isNaN(newCompletedAt.getTime())) {
         throw 'CompletedAt is not a valid date';
       }
     }
 
-    return new TodoEntity(id, text, completedAt);
+    return new TodoEntity(id, text, newCompletedAt);
   }
 }
