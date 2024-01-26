@@ -15,8 +15,8 @@ describe('Todo route testing', () => {
     testServer.close();
   });
 
-  // Antes de todo eliminamos todos los registros de la db
-  beforeAll(async () => {
+  // Antes de cada prueba eliminamos todos los registros de la db
+  beforeEach(async () => {
     await prisma.todo.deleteMany({});
   });
 
@@ -91,5 +91,22 @@ describe('Todo route testing', () => {
       .expect(400);
 
     expect(body).toEqual({ error: 'Text property is required' });
+  });
+
+  test('should return an updated TODO api/todos/:id', async () => {
+    const todo = await prisma.todo.create({ data: todo1 });
+    const { body } = await request(testServer.app)
+      .put(`/api/todos/${todo.id}`)
+      .send({
+        text: 'Buy hot chocolate',
+        completedAt: '2024-01-24',
+      })
+      .expect(200);
+
+    expect(body).toEqual({
+      id: expect.any(Number),
+      text: 'Buy hot chocolate',
+      completedAt: '2024-01-24T00:00:00.000Z',
+    });
   });
 });
