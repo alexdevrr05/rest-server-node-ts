@@ -23,6 +23,6 @@ export class TodoEntity {
       }
     }
 
-    return new TodoEntity(id, text, newCompletedAt);
+    return new TodoEntity(id, text, completedAt);
   }
 }
