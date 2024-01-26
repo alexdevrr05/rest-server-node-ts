@@ -109,4 +109,52 @@ describe('Todo route testing', () => {
       completedAt: '2024-01-24T00:00:00.000Z',
     });
   });
+
+  // TODO: realizar la operacion con error personalizados
+  test('should return 40 if TODO not found', async () => {
+    const todoId = 999;
+    const { body } = await request(testServer.app)
+      .put(`/api/todos/${todoId}`)
+      .send({
+        text: 'Buy hot chocolate',
+        completedAt: '2024-01-24',
+      })
+      .expect(400);
+
+    expect(body).toEqual({ error: `Todo with id ${todoId} not found` });
+  });
+
+  test('should return an updated TODO only the date', async () => {
+    const todo = await prisma.todo.create({ data: todo1 });
+
+    const { body } = await request(testServer.app)
+      .put(`/api/todos/${todo.id}`)
+      .send({
+        completedAt: '2024-01-24',
+      })
+      .expect(200);
+
+    expect(body).toEqual({
+      id: expect.any(Number),
+      text: todo.text,
+      completedAt: '2024-01-24T00:00:00.000Z',
+    });
+  });
+
+  test('should return an updated TODO only the text', async () => {
+    const todo = await prisma.todo.create({ data: todo2 });
+
+    const { body } = await request(testServer.app)
+      .put(`/api/todos/${todo.id}`)
+      .send({
+        text: 'Buy eggs',
+      })
+      .expect(200);
+
+    expect(body).toEqual({
+      id: expect.any(Number),
+      text: 'Buy eggs',
+      completedAt: null,
+    });
+  });
 });
